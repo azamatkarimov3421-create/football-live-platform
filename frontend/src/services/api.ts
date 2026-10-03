@@ -8,15 +8,36 @@ import {
   SystemMetrics,
 } from '../types';
 
-// In development, Vite proxies /api to http://localhost:4000
-const API_BASE = '/api';
+export const getApiBaseUrl = (): string => {
+  if (typeof window !== 'undefined') {
+    const custom = localStorage.getItem('futbollive_api_url');
+    if (custom) return custom;
+    if (window.location.protocol === 'file:') {
+      // In Android APK file assets, default to local Wi-Fi or server IP
+      return 'http://192.168.16.106:4000/api';
+    }
+  }
+  return '/api';
+};
+
+export const setApiBaseUrl = (url: string): void => {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('futbollive_api_url', url);
+  }
+};
 
 const client = axios.create({
-  baseURL: API_BASE,
+  baseURL: getApiBaseUrl(),
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
   },
+});
+
+// Interceptor to always pick up dynamically changed server URL
+client.interceptors.request.use((req) => {
+  req.baseURL = getApiBaseUrl();
+  return req;
 });
 
 // Setup device ID for favorites persistence

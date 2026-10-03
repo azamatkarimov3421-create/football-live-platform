@@ -10,7 +10,7 @@ import {
   CheckCircle2,
   Clock,
 } from 'lucide-react';
-import { api } from '../services/api';
+import { api, getApiBaseUrl, setApiBaseUrl } from '../services/api';
 import { SystemMetrics } from '../types';
 import { useTheme } from '../context/ThemeContext';
 
@@ -23,6 +23,7 @@ export const ProfilePage: React.FC = () => {
 
   const [username, setUsername] = useState(() => localStorage.getItem('futbollive_username') || 'Futbol Muxlisi');
   const [favoriteTeam, setFavoriteTeam] = useState(() => localStorage.getItem('futbollive_fav_team') || 'Real Madrid');
+  const [serverUrl, setServerUrl] = useState(() => getApiBaseUrl());
   const [notifications, setNotifications] = useState(true);
 
   const fetchMetrics = async () => {
@@ -43,6 +44,7 @@ export const ProfilePage: React.FC = () => {
   const handleSaveProfile = () => {
     localStorage.setItem('futbollive_username', username);
     localStorage.setItem('futbollive_fav_team', favoriteTeam);
+    setApiBaseUrl(serverUrl);
     alert('Sozlamalar saqlandi!');
   };
 
@@ -105,6 +107,18 @@ export const ProfilePage: React.FC = () => {
                   onChange={(e) => setFavoriteTeam(e.target.value)}
                   className="w-full mt-1 bg-stadium-950 border border-stadium-800 rounded-xl px-3.5 py-2 text-sm text-slate-100 focus:outline-none focus:border-pitch-glow"
                 />
+              </div>
+
+              <div>
+                <label className="text-xs text-slate-400 font-medium">Backend Server Manzili (API URL)</label>
+                <input
+                  type="text"
+                  value={serverUrl}
+                  placeholder="Masalan: http://192.168.16.106:4000/api yoki https://domen.uz/api"
+                  onChange={(e) => setServerUrl(e.target.value)}
+                  className="w-full mt-1 bg-stadium-950 border border-stadium-800 rounded-xl px-3.5 py-2 text-xs font-mono text-slate-100 focus:outline-none focus:border-pitch-glow"
+                />
+                <p className="text-[10px] text-slate-500 mt-1">Telefonda (APK) kompyuteringiz Wi-Fi IP manzilini kiriting</p>
               </div>
 
               <div className="pt-2">
