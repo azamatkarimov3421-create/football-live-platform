@@ -12,6 +12,11 @@ export const getApiBaseUrl = (): string => {
   if (typeof window !== 'undefined') {
     const custom = localStorage.getItem('futbollive_api_url');
     if (custom) return custom;
+    // Check Vite environment variable for Vercel deployment
+    const metaEnv = (import.meta as any).env;
+    if (metaEnv?.VITE_API_URL) {
+      return metaEnv.VITE_API_URL;
+    }
     if (window.location.protocol === 'file:') {
       // In Android APK file assets, default to local Wi-Fi or server IP
       return 'http://192.168.16.106:4000/api';
