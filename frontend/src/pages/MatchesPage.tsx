@@ -111,6 +111,29 @@ export const MatchesPage: React.FC<Props> = ({ onSelectMatch }) => {
           </div>
         </div>
 
+        {/* Top 3 Asosiy Liga Tanlovi */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none pt-1">
+          {[
+            { id: 'ALL', name: 'Barcha Ligalar', icon: '⚽' },
+            { id: 'PL', name: 'Premier League', icon: '🏴󠁧󠁢󠁥󠁮󠁧󠁿' },
+            { id: 'PD', name: 'La Liga', icon: '🇪🇸' },
+            { id: 'CL', name: 'Champions League', icon: '🏆' },
+          ].map((l) => (
+            <button
+              key={l.id}
+              onClick={() => setSelectedCompetition(l.id)}
+              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all border ${
+                selectedCompetition === l.id
+                  ? 'bg-pitch-glow text-stadium-950 font-bold border-pitch-glow shadow-glow-green/20'
+                  : 'bg-stadium-950 text-slate-300 border-stadium-800 hover:bg-stadium-850'
+              }`}
+            >
+              <span>{l.icon}</span>
+              <span>{l.name}</span>
+            </button>
+          ))}
+        </div>
+
         {/* Secondary Filter Row: Status + League Select */}
         <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-stadium-800/80 text-xs">
           {/* Status buttons */}

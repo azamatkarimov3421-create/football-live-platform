@@ -44,7 +44,19 @@ export const HomePage: React.FC<Props> = ({ onNavigate, onSelectMatch }) => {
     return () => clearInterval(interval);
   }, []);
 
+  const [selectedLeagueFilter, setSelectedLeagueFilter] = useState<string>('ALL');
+
   const heroMatch = liveMatches.length > 0 ? liveMatches[0] : todayMatches[0];
+
+  const filteredTodayMatches =
+    selectedLeagueFilter === 'ALL'
+      ? todayMatches
+      : todayMatches.filter((m) => m.competition.code === selectedLeagueFilter);
+
+  const filteredLiveMatches =
+    selectedLeagueFilter === 'ALL'
+      ? liveMatches
+      : liveMatches.filter((m) => m.competition.code === selectedLeagueFilter);
 
   return (
     <div className="space-y-10 animate-fade-in">
@@ -85,6 +97,42 @@ export const HomePage: React.FC<Props> = ({ onNavigate, onSelectMatch }) => {
               Tizim ko‘rsatkichlari &rarr;
             </button>
           </div>
+        </div>
+      </div>
+
+      {/* TOP 3 ASOSIY LIGA TEZKOR TANLOVI */}
+      <div className="bg-stadium-900/90 border border-stadium-800 rounded-3xl p-4 sm:p-5 shadow-card">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
+          <div className="flex items-center gap-2">
+            <Trophy className="w-5 h-5 text-amber-400" />
+            <h3 className="font-bold text-white text-sm sm:text-base">Top 3 Asosiy Liga Bo‘yicha O‘yinlar:</h3>
+          </div>
+          <span className="text-xs text-slate-400">Ligani tanlab o‘yinlarini ko‘ring</span>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          {[
+            { id: 'ALL', name: 'Barcha Ligalar', icon: '⚽', desc: 'Barcha o‘yinlar' },
+            { id: 'PL', name: 'Premier League', icon: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', desc: 'Angliya Chempionati' },
+            { id: 'PD', name: 'La Liga', icon: '🇪🇸', desc: 'Ispaniya Chempionati' },
+            { id: 'CL', name: 'Champions League', icon: '🏆', desc: 'Chempionlar Ligasi' },
+          ].map((l) => (
+            <button
+              key={l.id}
+              onClick={() => setSelectedLeagueFilter(l.id)}
+              className={`p-3 rounded-2xl border text-left transition-all ${
+                selectedLeagueFilter === l.id
+                  ? 'border-pitch-glow bg-pitch-glow/15 shadow-glow-green/20 text-white'
+                  : 'border-stadium-800 bg-stadium-950 text-slate-300 hover:bg-stadium-850'
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <span className="text-lg">{l.icon}</span>
+                <span className="font-bold text-xs sm:text-sm truncate">{l.name}</span>
+              </div>
+              <p className="text-[10px] text-slate-400 mt-1 truncate">{l.desc}</p>
+            </button>
+          ))}
         </div>
       </div>
 
@@ -156,7 +204,7 @@ export const HomePage: React.FC<Props> = ({ onNavigate, onSelectMatch }) => {
             <Radio className="w-5 h-5 text-emerald-400 animate-pulse" />
             <h2 className="text-lg sm:text-xl font-bold text-white">Jonli O‘yinlar</h2>
             <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400">
-              {liveMatches.length}
+              {filteredLiveMatches.length}
             </span>
           </div>
           <button
@@ -169,15 +217,15 @@ export const HomePage: React.FC<Props> = ({ onNavigate, onSelectMatch }) => {
 
         {loading ? (
           <LoadingSkeleton rows={2} />
-        ) : liveMatches.length > 0 ? (
+        ) : filteredLiveMatches.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {liveMatches.map((m) => (
+            {filteredLiveMatches.map((m) => (
               <MatchCard key={m.id} match={m} onSelect={onSelectMatch} />
             ))}
           </div>
         ) : (
           <div className="text-center py-10 bg-stadium-900/40 rounded-2xl border border-stadium-800 text-slate-400 text-sm">
-            Hozirda faol jonli o‘yinlar yo‘q. Bugungi o‘yinlar jadvalini ko‘ring.
+            Tanlangan ligada hozirda faol jonli o‘yin yo‘q. Bugungi taqvim o‘yinlarini ko‘ring.
           </div>
         )}
       </section>
@@ -187,7 +235,7 @@ export const HomePage: React.FC<Props> = ({ onNavigate, onSelectMatch }) => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Trophy className="w-5 h-5 text-amber-400" />
-            <h2 className="text-lg sm:text-xl font-bold text-white">Top Turnirlar</h2>
+            <h2 className="text-lg sm:text-xl font-bold text-white">Top Turnirlar va Jadvallar</h2>
           </div>
           <button
             onClick={() => onNavigate('leagues')}
@@ -226,7 +274,12 @@ export const HomePage: React.FC<Props> = ({ onNavigate, onSelectMatch }) => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Calendar className="w-5 h-5 text-cyan-400" />
-            <h2 className="text-lg sm:text-xl font-bold text-white">Bugungi Barcha O‘yinlar</h2>
+            <h2 className="text-lg sm:text-xl font-bold text-white">
+              Bugungi O‘yinlar Jadvali {selectedLeagueFilter !== 'ALL' && `(${selectedLeagueFilter})`}
+            </h2>
+            <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-cyan-500/20 text-cyan-400">
+              {filteredTodayMatches.length}
+            </span>
           </div>
           <button
             onClick={() => onNavigate('matches')}
@@ -238,11 +291,15 @@ export const HomePage: React.FC<Props> = ({ onNavigate, onSelectMatch }) => {
 
         {loading ? (
           <LoadingSkeleton rows={3} />
-        ) : (
+        ) : filteredTodayMatches.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {todayMatches.map((m) => (
+            {filteredTodayMatches.map((m) => (
               <MatchCard key={m.id} match={m} onSelect={onSelectMatch} />
             ))}
+          </div>
+        ) : (
+          <div className="text-center py-10 bg-stadium-900/40 rounded-2xl border border-stadium-800 text-slate-400 text-sm">
+            Tanlangan liga bo‘yicha bugun o‘yinlar topilmadi.
           </div>
         )}
       </section>
