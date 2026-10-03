@@ -8,4 +8,5 @@ yarn-debug.log*
 yarn-error.log*
 android_apk/bin/
 android_apk/gen/
+scripts/*.json
 

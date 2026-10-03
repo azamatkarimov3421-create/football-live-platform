@@ -5,9 +5,10 @@ export interface Competition {
   type?: string;
   emblem: string;
   area?: {
+    id?: number;
     name: string;
-    code: string;
-    flag: string;
+    code?: string;
+    flag?: string | null;
   };
 }
 
@@ -50,8 +51,8 @@ export interface MatchStats {
   yellowCards: { home: number; away: number };
   redCards: { home: number; away: number };
   saves: { home: number; away: number };
-  passes: { home: number; away: number };
-  passAccuracy: { home: number; away: number };
+  passes?: { home: number; away: number };
+  passAccuracy?: { home: number; away: number };
 }
 
 export interface Player {
@@ -100,7 +101,7 @@ export interface Match {
     | 'POSTPONED'
     | 'CANCELLED'
     | 'AWARDED';
-  minute?: number | string;
+  minute?: number | string | null;
   matchday?: number;
   stage?: string;
   competition: Competition;
@@ -114,7 +115,7 @@ export interface StandingTableItem {
   position: number;
   team: TeamBrief;
   playedGames: number;
-  form: string;
+  form?: string | null;
   won: number;
   draw: number;
   lost: number;
@@ -126,16 +127,16 @@ export interface StandingTableItem {
 
 export interface StandingsResponse {
   competition: Competition;
-  season: {
+  season?: {
     id: number;
-    startDate: string;
-    endDate: string;
-    currentMatchday: number;
+    startDate?: string;
+    endDate?: string;
+    currentMatchday?: number;
   };
   standings: Array<{
-    stage: string;
-    type: string;
-    group: string | null;
+    stage?: string;
+    type?: string;
+    group?: string | null;
     table: StandingTableItem[];
   }>;
 }

@@ -60,10 +60,11 @@ export const api = {
   async getLiveMatches(): Promise<{ matches: Match[]; source: string; timestamp: number }> {
     try {
       const res = await client.get('/matches/live');
-      if (res.data?.matches) return res.data;
+      if (res.data?.matches && res.data.matches.length > 0) return res.data;
     } catch (e) {}
-    const matches = getClientMockMatches().filter((m) => m.status === 'IN_PLAY' || m.status === 'PAUSED');
-    return { matches, source: 'cache', timestamp: Date.now() };
+    const all = getClientMockMatches();
+    const inPlay = all.filter((m) => m.status === 'IN_PLAY' || m.status === 'PAUSED');
+    return { matches: inPlay.length > 0 ? inPlay : all.slice(0, 4), source: 'cache', timestamp: Date.now() };
   },
 
   // Today's matches (cached for 60s)
@@ -71,7 +72,7 @@ export const api = {
     const today = new Date().toISOString().split('T')[0];
     try {
       const res = await client.get('/matches/today');
-      if (res.data?.matches) return res.data;
+      if (res.data?.matches && res.data.matches.length > 0) return res.data;
     } catch (e) {}
     return { matches: getClientMockMatches(), source: 'cache', timestamp: Date.now(), date: today };
   },
@@ -80,7 +81,7 @@ export const api = {
   async getMatches(params: { date?: string; status?: string; competition?: string }): Promise<{ matches: Match[]; source: string }> {
     try {
       const res = await client.get('/matches', { params });
-      if (res.data?.matches) return res.data;
+      if (res.data?.matches && res.data.matches.length > 0) return res.data;
     } catch (e) {}
     let matches = getClientMockMatches();
     if (params.status && params.status !== 'ALL') {

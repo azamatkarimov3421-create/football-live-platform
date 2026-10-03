@@ -61,7 +61,7 @@ export const MatchCard: React.FC<Props> = ({ match, onSelect }) => {
         </div>
 
         <div className="flex items-center gap-2">
-          <StatusBadge status={match.status} minute={match.minute} />
+          <StatusBadge status={match.status} minute={match.minute || undefined} />
           <button
             onClick={handleFavoriteClick}
             className={`p-1 rounded-lg transition-colors ${

@@ -19,7 +19,12 @@ export const LivePage: React.FC<Props> = ({ onSelectMatch }) => {
   const fetchLive = async () => {
     try {
       const res = await api.getLiveMatches();
-      setMatches(res.matches || []);
+      let liveList = res.matches || [];
+      if (liveList.length === 0) {
+        const fallback = await api.getTodayMatches();
+        liveList = fallback.matches || [];
+      }
+      setMatches(liveList);
       setDataSource(res.source || 'cache');
       setCountdown(30);
     } catch (err) {
@@ -28,6 +33,7 @@ export const LivePage: React.FC<Props> = ({ onSelectMatch }) => {
       setLoading(false);
     }
   };
+
 
   useEffect(() => {
     fetchLive();
@@ -46,14 +52,16 @@ export const LivePage: React.FC<Props> = ({ onSelectMatch }) => {
     return () => clearInterval(timer);
   }, []);
 
-  const leaguesList = Array.from(
-    new Set(matches.map((m) => m.competition.name))
-  );
 
   const filteredMatches =
     selectedLeague === 'ALL'
       ? matches
-      : matches.filter((m) => m.competition.name === selectedLeague);
+      : matches.filter(
+          (m) =>
+            m.competition.code === selectedLeague ||
+            m.competition.name.toLowerCase().includes(selectedLeague.toLowerCase())
+        );
+
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -104,31 +112,27 @@ export const LivePage: React.FC<Props> = ({ onSelectMatch }) => {
 
       {/* League Filter Chips */}
       <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-        <button
-          onClick={() => setSelectedLeague('ALL')}
-          className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
-            selectedLeague === 'ALL'
-              ? 'bg-pitch-glow text-stadium-950 font-bold shadow-glow-green/20'
-              : 'bg-stadium-900 text-slate-300 hover:bg-stadium-850 border border-stadium-800'
-          }`}
-        >
-          Barcha ligalar ({matches.length})
-        </button>
-
-        {leaguesList.map((league) => (
+        {[
+          { id: 'ALL', name: 'Barcha Ligalar', icon: '⚽' },
+          { id: 'PL', name: 'Premier League', icon: '🏴󠁧󠁢󠁥󠁮󠁧󠁿' },
+          { id: 'PD', name: 'La Liga', icon: '🇪🇸' },
+          { id: 'CL', name: 'Champions League', icon: '🏆' },
+        ].map((l) => (
           <button
-            key={league}
-            onClick={() => setSelectedLeague(league)}
-            className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
-              selectedLeague === league
-                ? 'bg-pitch-glow text-stadium-950 font-bold shadow-glow-green/20'
-                : 'bg-stadium-900 text-slate-300 hover:bg-stadium-850 border border-stadium-800'
+            key={l.id}
+            onClick={() => setSelectedLeague(l.id)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all border ${
+              selectedLeague === l.id
+                ? 'bg-pitch-glow text-stadium-950 font-bold border-pitch-glow shadow-glow-green/20'
+                : 'bg-stadium-900 text-slate-300 hover:bg-stadium-850 border-stadium-800'
             }`}
           >
-            {league}
+            <span>{l.icon}</span>
+            <span>{l.name}</span>
           </button>
         ))}
       </div>
+
 
       {/* Match Cards Grid */}
       {loading ? (

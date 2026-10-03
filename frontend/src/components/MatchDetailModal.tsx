@@ -66,8 +66,9 @@ export const MatchDetailModal: React.FC<Props> = ({ match, onClose }) => {
         {/* Score Hero Section */}
         <div className="p-6 bg-gradient-to-b from-stadium-950 to-stadium-900 border-b border-stadium-800 text-center">
           <div className="inline-block mb-3">
-            <StatusBadge status={match.status} minute={match.minute} />
+            <StatusBadge status={match.status} minute={match.minute || undefined} />
           </div>
+
 
           <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4">
             {/* Home */}

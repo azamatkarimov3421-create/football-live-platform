@@ -275,11 +275,12 @@ export const HomePage: React.FC<Props> = ({ onNavigate, onSelectMatch }) => {
           <div className="flex items-center gap-2">
             <Calendar className="w-5 h-5 text-cyan-400" />
             <h2 className="text-lg sm:text-xl font-bold text-white">
-              Bugungi O‘yinlar Jadvali {selectedLeagueFilter !== 'ALL' && `(${selectedLeagueFilter})`}
+              Asosiy O‘yinlar va Natijalar {selectedLeagueFilter !== 'ALL' && `(${selectedLeagueFilter})`}
             </h2>
             <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-cyan-500/20 text-cyan-400">
-              {filteredTodayMatches.length}
+              {filteredTodayMatches.length} ta o‘yin
             </span>
+
           </div>
           <button
             onClick={() => onNavigate('matches')}
